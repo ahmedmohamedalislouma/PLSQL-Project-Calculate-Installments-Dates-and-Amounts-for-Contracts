@@ -1,0 +1,55 @@
+declare 
+
+v_start number(10);
+
+ -- CURSOR 1  
+    CURSOR V_SEQ_CUR IS
+       SELECT  *
+          FROM  USER_SEQUENCES  ;
+                 
+ -- CURSOR 2      
+    CURSOR PK_COLUMNS IS
+             SELECT  COLUMN_NAME , TABLE_NAME  FROM USER_cons_columns WHERE TABLE_NAME IN       
+                 ( SELECT  TABLE_NAME  FROM   USER_TAB_COLUMNS WHERE DATA_TYPE = 'NUMBER' AND NULLABLE ='N' )
+                  
+                   AND constraint_name  IN (SELECT constraint_name  FROM all_constraints 
+                   WHERE  CONSTRAINT_TYPE = 'P' )
+                    AND POSITION = '1' ;
+                        
+BEGIN
+
+
+    FOR V_RECD IN V_SEQ_CUR LOOP
+      
+          EXECUTE IMMEDIATE 'DROP SEQUENCE ' || V_RECD.SEQUENCE_NAME;
+            
+    END LOOP;
+
+    FOR V_REC IN PK_COLUMNS LOOP
+    
+     
+      EXECUTE  IMMEDIATE  'SELECT MAX( '|| V_REC.COLUMN_NAME ||')+ 1    from ' || V_REC.table_name INTO v_start  ;
+      EXECUTE IMMEDIATE 'CREATE SEQUENCE  '|| V_REC.TABLE_NAME   ||'_SEQ INCREMENT BY 1 START WITH ' || v_start ||' NOCYCLE NOCACHE ';
+      
+      EXECUTE IMMEDIATE  'CREATE OR REPLACE TRIGGER '|| V_REC.TABLE_NAME  ||'_TRG
+                                                      BEFORE INSERT
+                                                    ON ' || V_REC.TABLE_NAME   ||
+                                                     '  REFERENCING NEW AS New OLD AS Old
+                                                    FOR EACH ROW
+                                                   
+                                                     BEGIN
+                                                    
+                                                      :new.'||V_REC.COLUMN_NAME ||' := '|| V_REC.TABLE_NAME  ||'_SEQ.nextval;
+                                                      
+                                                    END;  ';
+                                            
+    
+    
+    END LOOP;
+ 
+     
+
+    
+END;
+
+
