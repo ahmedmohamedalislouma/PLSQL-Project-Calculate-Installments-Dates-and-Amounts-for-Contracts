@@ -1,0 +1,31 @@
+create or replace function CALC_DATE   (  V_START DATE  ,  V_PAYMENT VARCHAR2 , X NUMBER  )
+return DATE
+is
+
+V_CAL_DATE DATE ;
+
+
+begin
+
+        IF V_PAYMENT  = 'ANNUAL' THEN
+
+                 V_CAL_DATE:= ADD_MONTHS(V_START, 12 * X );
+                 
+        ELSIF V_PAYMENT  = 'MONTHLY' THEN 
+
+                V_CAL_DATE:= ADD_MONTHS(V_START, 1 * X );   
+               
+        ELSIF V_PAYMENT  = 'QUARTER' THEN 
+
+              V_CAL_DATE:= ADD_MONTHS(V_START, 3 * X );
+                      
+        ELSIF V_PAYMENT  = 'HALF_ANNUAL' THEN 
+
+                V_CAL_DATE:= ADD_MONTHS(V_START, 6 * X );
+                
+        END IF ; 
+
+RETURN V_CAL_DATE ;
+
+
+end;

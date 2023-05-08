@@ -1,0 +1,38 @@
+create or replace function CALC_AMOUNT   ( V_TOTAL number , V_DEPOSIT number , V_START DATE , V_END DATE ,  V_PAYMENT VARCHAR2  )
+return NUMBER
+is
+
+V_NO_MONS NUMBER(4) ;
+V_AMOUNT NUMBER(6) ;
+begin
+
+--V_NO_MONS:=MONTHS_BETWEEN( V_START , V_END );
+
+            IF V_PAYMENT  = 'ANNUAL' THEN
+
+                  
+                 V_AMOUNT:= (V_TOTAL - NVL(V_DEPOSIT,0) ) / (MONTHS_BETWEEN( V_END , V_START )/12);
+              
+            ELSIF V_PAYMENT  = 'MONTHLY' THEN 
+
+                
+                    V_AMOUNT:=(V_TOTAL - NVL(V_DEPOSIT,0) ) / (MONTHS_BETWEEN( V_END , V_START ));
+
+            ELSIF V_PAYMENT  = 'QUARTER' THEN 
+
+             
+                    V_AMOUNT:=(V_TOTAL - NVL(V_DEPOSIT,0) ) / (MONTHS_BETWEEN( V_END , V_START )/3);
+
+            ELSIF V_PAYMENT  = 'HALF_ANNUAL' THEN 
+
+                 
+                    V_AMOUNT:=(V_TOTAL - NVL(V_DEPOSIT,0) ) / (MONTHS_BETWEEN( V_END , V_START )/6);
+
+            END IF ; 
+
+RETURN V_AMOUNT ;
+
+
+
+
+end;

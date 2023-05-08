@@ -1,0 +1,36 @@
+create or replace function CALC_PERIODS  (  V_START DATE , V_END DATE ,  V_PAYMENT VARCHAR2  )
+return NUMBER
+is
+
+V_NO_MONS NUMBER(4) ;
+
+begin
+
+
+
+            IF V_PAYMENT  = 'ANNUAL' THEN
+
+                  
+                 V_NO_MONS:=  (MONTHS_BETWEEN( V_END , V_START )/12);
+              
+            ELSIF V_PAYMENT  = 'MONTHLY' THEN 
+
+                
+                    V_NO_MONS:=  (MONTHS_BETWEEN( V_END , V_START ));
+
+            ELSIF V_PAYMENT  = 'QUARTER' THEN 
+
+             
+                    V_NO_MONS:=  (MONTHS_BETWEEN( V_END , V_START )/3);
+
+            ELSIF V_PAYMENT  = 'HALF_ANNUAL' THEN 
+
+                 
+                    V_NO_MONS:=  (MONTHS_BETWEEN( V_END , V_START )/6);
+
+            END IF ; 
+
+RETURN V_NO_MONS ;
+
+
+end;

@@ -1,0 +1,38 @@
+CREATE OR REPLACE procedure  Project_2  is 
+
+            V_CALC_AMOUNT  NUMBER (7) ;
+            
+            V_CALC_PERIODS  NUMBER (4) ;
+            
+            
+         CURSOR CONTRA_CUR IS
+                   SELECT  *
+                      FROM  CONTRACTS  ;
+                      
+              
+BEGIN 
+
+        FOR CONTRA_REC IN CONTRA_CUR LOOP 
+         
+           V_CALC_AMOUNT:= CALC_AMOUNT  ( CONTRA_REC.CONTRACT_TOTAL_FEES , CONTRA_REC.CONTRACT_DEPOSIT_FEES , CONTRA_REC.CONTRACT_STARTDATE  , CONTRA_REC.CONTRACT_ENDDATE   ,  CONTRA_REC.CONTRACT_PAYMENT_TYPE  );
+                    
+           V_CALC_PERIODS  :=  CALC_PERIODS  ( CONTRA_REC.CONTRACT_STARTDATE ,CONTRA_REC.CONTRACT_ENDDATE ,  CONTRA_REC.CONTRACT_PAYMENT_TYPE  );
+               
+                  FOR X  IN 0 .. V_CALC_PERIODS-1   LOOP 
+                   
+                       IF  X =  0   THEN
+                                
+                                INSERT INTO  INSTALLMENTS_PAID VALUES ( INSTALLMENTS_PAID_SEQ.nextval ,CONTRA_REC.CONTRACT_ID , CONTRA_REC.CONTRACT_STARTDATE  , V_CALC_AMOUNT , 0 ) ;
+
+                      ELSE  
+                                 INSERT INTO  INSTALLMENTS_PAID  VALUES (INSTALLMENTS_PAID_SEQ.nextval ,CONTRA_REC.CONTRACT_ID , CALC_DATE ( CONTRA_REC.CONTRACT_STARTDATE   , CONTRA_REC.CONTRACT_PAYMENT_TYPE , X ) , V_CALC_AMOUNT , 0 ) ;
+
+                      END IF ;
+                                
+                                
+                END LOOP;
+
+
+        END LOOP ; 
+
+END ;          
